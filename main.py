@@ -27,9 +27,10 @@ def getRequestDatas():
 
 
     for row in range(2, row_count+1):
-        key = wsheet.cell(row=row, column=3).value
-        value = wsheet.cell(row=row, column=4).value
-        dataDict[key] = value
+        if wsheet.cell(row=row, column=3).value != "" :
+            key = wsheet.cell(row=row, column=3).value
+            value = wsheet.cell(row=row, column=4).value
+            dataDict[key] = value
     
     return dataDict
 
