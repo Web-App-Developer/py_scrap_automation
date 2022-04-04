@@ -16,7 +16,7 @@ root_path = "https://patentscope2.wipo.int/search/en/search.jsf"
 
 
 def getRequestDatas():
-    file = "Patents_List.xlsx"
+    file = "Patents_List1.xlsx"
 
     #load the work book
     wb_obj = load_workbook(filename = file)
@@ -24,8 +24,7 @@ def getRequestDatas():
     dataDict = {}
     row_count = wsheet.max_row
     col_count = wsheet.max_column
-    print("row_count",row_count)
-    print("col_count",col_count)
+
 
     for row in range(2, row_count+1):
         key = wsheet.cell(row=row, column=3).value
@@ -38,9 +37,7 @@ def getRequestDatas():
 def scrap_one_page(dataDict):
     # foreach dataDict
     for key, value in dataDict.items():
-        searchString = key
-        print("searchString",searchString)
-        get_input_search_click_button(searchString)
+        get_input_search_click_button(str(key))
 
 
 def get_input_search_click_button(searchString):
@@ -55,38 +52,30 @@ def get_input_search_click_button(searchString):
     html = driver.execute_script("return document.body.innerHTML;")
     content = BeautifulSoup(html, "html.parser")
     input = driver.find_element(By.ID, "simpleSearchForm:fpSearch:input")
-    slow_typing(input, str(searchString))
+    slow_typing(input, searchString)
     time.sleep(0.1)
-
+    
+    # search button
     button = driver.find_element_by_id("simpleSearchForm:fpSearch:buttons").find_element_by_tag_name("button")
     button.click()
-    time.sleep(0.1)
+    time.sleep(0.2)
 
-    # button
+    # WO button
     driver.find_element_by_xpath("// span[contains(text(),\
     'WO')]").click()
-    time.sleep(0.1)
+    time.sleep(0.2)
 
     #tab
     driver.find_element_by_xpath("// a[contains(text(),\
     'Documents')]").click()
-     time.sleep(10)
+    time.sleep(10)
 
-    get_providers = driver.find_elements_by_class_name("ui-datatable-header") #get the list of wallet providers
-    for get_provider in get_providers:
-        if get_provider.text == "Published International Application":
-            print("Published International Application")
-            nextObj = get_provider.find_element_by_xpath('./following-sibling::div')
-            print("nextObj", nextObj)
-            finalObj = driver.find_elements_by_xpath("//div[@id='detailMainForm:MyTabViewId:PCTDOCUMENTS']//div//div//div[2]//div//div[2]//div[2]//table//tbody//tr//td[3]//div//span//a")
-            print("finalObj", finalObj)
-            finalObj.click()
-    # download_button= driver.find_element(By.CSS_SELECTOR, "div.ps-downloadables > span:first-child > a")
-    # download_button.click()
-    time.sleep(0.2)
+    #download
+    driver.find_element_by_xpath("//td[contains(text(), \'Initial Publication with ISR')]/../td[4]/div/span/a").click()
+    time.sleep(10) # changed the speed of network speed
+    driver.quit()
 
-def second_step():
-    print("secondstep")
+
 
 def slow_typing(element, text):
     for character in text:
